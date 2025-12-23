@@ -204,3 +204,25 @@ header {
     border-left: 3px solid #ccc;
     flex-grow: 1; /* Permite que ocupe el espacio restante */
 }
+/* --- Estilos para la Previsualización (Hover) --- */
+
+.preview-block {
+    opacity: 0.6; /* Un poco transparente para distinguirlo */
+    border: 3px dashed #333; /* Borde punteado para indicar previsualización */
+    color: white;
+    cursor: default !important; /* Muestra que no es interactivo aún */
+    font-size: 11px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Estilo para cuando la previsualización detecta un conflicto */
+.preview-conflict {
+    background-color: #dc3545 !important; /* Rojo fuerte de conflicto */
+    border: 3px solid #dc3545 !important;
+    animation: none; /* Desactivar la animación de conflicto si ya existe */
+}
