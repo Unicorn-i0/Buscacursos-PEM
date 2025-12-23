@@ -110,7 +110,7 @@ function generateScheduleGrid() {
         row.appendChild(timeCell);
 
         // Celdas para los días de la semana (Lunes a Sábado)
-        const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
         days.forEach(day => {
             const dayCell = document.createElement('td');
             dayCell.dataset.day = day;
