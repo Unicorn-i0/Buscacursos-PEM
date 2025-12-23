@@ -164,3 +164,43 @@ header {
     cursor: pointer;
     font-weight: bold;
 }
+/* Estilos para mostrar el horario antes de seleccionar */
+
+.section-option {
+    display: flex; /* Alinea el botón y el resumen uno al lado del otro */
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.section-btn {
+    /* Estilo del botón de selección */
+    margin-right: 15px; 
+    padding: 8px 15px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0; /* Evita que el botón se achique */
+}
+
+.section-btn:hover:not(:disabled) {
+    background-color: #1a7fc5;
+}
+
+.section-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.schedule-summary {
+    /* Estilo del texto del horario */
+    font-size: 0.9em;
+    color: #555;
+    background-color: #f9f9f9;
+    padding: 5px 10px;
+    border-left: 3px solid #ccc;
+    flex-grow: 1; /* Permite que ocupe el espacio restante */
+}
