@@ -133,7 +133,115 @@ function formatScheduleSummary(horario) {
         `${bloque.dia}: ${bloque.inicio}-${bloque.fin} (${bloque.tipo})`
     ).join(' | ');
 }
+/**
+ * Genera una cadena de texto legible que resume el horario de una sección.
+ */
+function formatScheduleSummary(horario) {
+    // Ejemplo: "Jueves: 8:30-9:50 (CÁTEDRA) | Viernes: 10:00-11:20 (AYUDANTÍA)"
+    return horario.map(bloque => 
+        `${bloque.dia}: ${bloque.inicio}-${bloque.fin} (${bloque.tipo})`
+    ).join(' | ');
+}
 
+/**
+ * Muestra las secciones de un curso y añade listeners de previsualización.
+ */
+function displaySections(curso) {
+    sectionSelectionDiv.innerHTML = `<h3>Secciones de ${curso.sigla} - ${curso.nombre}:</h3>`;
+    
+    curso.secciones.forEach(seccion => {
+        
+        const sectionContainer = document.createElement('div');
+        sectionContainer.classList.add('section-option'); // <--- CLAVE PARA EL CSS
+
+        // 1. Botón de selección
+        const button = document.createElement('button');
+        button.textContent = `Sección ${seccion.id}`;
+        button.classList.add('section-btn');
+        
+        const isAdded = horarioSeleccionado.some(c => c.sigla === curso.sigla && c.seccionId === seccion.id);
+        button.disabled = isAdded;
+        if (isAdded) {
+            button.textContent += " (Seleccionada)";
+        }
+
+        // 2. Resumen del horario
+        const scheduleSummary = formatScheduleSummary(seccion.horario);
+        const summarySpan = document.createElement('span');
+        summarySpan.classList.add('schedule-summary'); // <--- CLAVE PARA EL CSS
+        summarySpan.textContent = scheduleSummary;
+        
+        // ... (El resto de la lógica de hover y el click del botón es la misma) ...
+        
+        // Eventos de previsualización (manteniendo la lógica del hover)
+        // ... (resto de la lógica del hover)
+
+        // Lógica de añadir (click en el botón)
+        button.onclick = () => {
+            // ... (resto de la lógica del botón)
+        };
+        
+        sectionContainer.appendChild(button);
+        sectionContainer.appendChild(summarySpan); // <--- INSERCIÓN DEL RESUMEN
+        sectionSelectionDiv.appendChild(sectionContainer);
+    });
+}
+// ... (El resto de app.js)
+2. 🎨 styles.css (Asegurando la Visibilidad)
+El problema es casi seguro la falta de estilos o estilos insuficientes. Asegúrate de que las siguientes reglas CSS estén presentes y correctas en tu archivo styles.css.
+
+Si ya tenías estas reglas, verifica que no estén siendo sobreescritas por otro estilo. Si no las tenías, agrégalas al final del archivo:
+
+CSS
+
+/* --- Estilos para mostrar el horario antes de seleccionar --- */
+
+/* Contenedor principal para alinear el botón y el texto */
+.section-option {
+    display: flex; /* Utiliza Flexbox para alineación */
+    align-items: center; /* Centra verticalmente */
+    margin-bottom: 8px;
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+    background-color: #ffffff; /* Fondo claro */
+    transition: background-color 0.2s;
+}
+
+.section-option:hover {
+    background-color: #f0f0ff; /* Efecto suave al pasar el ratón */
+}
+
+/* Estilo del botón de selección */
+.section-btn {
+    margin-right: 15px; 
+    padding: 8px 15px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0; /* Evita que el botón se achique si el texto es muy largo */
+}
+
+.section-btn:hover:not(:disabled) {
+    background-color: #1a7fc5;
+}
+
+.section-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Estilo del texto del horario (el que no se veía) */
+.schedule-summary {
+    font-size: 0.95em; /* Asegura un tamaño legible */
+    color: #333; /* Color oscuro para contraste */
+    background-color: #f9f9f9;
+    padding: 5px 10px;
+    border-left: 3px solid #673AB7; /* Un borde de color para destacarlo */
+    flex-grow: 1; /* Permite que ocupe el espacio restante */
+    word-break: break-word; /* Para manejar textos largos */
+}
 /**
  * Muestra las secciones de un curso y añade listeners de previsualización.
  */
