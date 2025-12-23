@@ -10,7 +10,7 @@ const ALMUERZO_DURACION = 60;
 
 // Horarios de inicio y fin de la jornada
 const JORNADA_INICIO = 8 * 60 + 30; // 8:30 AM en minutos
-const JORNADA_FIN = 20 * 60 + 0;   // 20:00 PM en minutos
+const JORNADA_FIN = 19 * 60 + 20;   // 19:20 PM en minutos
 
 // Horario específico del almuerzo
 const ALMUERZO_INICIO = 14 * 60 + 20; // 14:20 PM
