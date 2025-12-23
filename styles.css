@@ -226,3 +226,52 @@ header {
     border: 3px solid #dc3545 !important;
     animation: none; /* Desactivar la animación de conflicto si ya existe */
 }
+
+/* --- Estilos para mostrar el horario antes de seleccionar --- */
+
+/* Contenedor principal para alinear el botón y el texto */
+.section-option {
+    display: flex; /* Utiliza Flexbox para alineación */
+    align-items: center; /* Centra verticalmente */
+    margin-bottom: 8px;
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+    background-color: #ffffff; /* Fondo claro */
+    transition: background-color 0.2s;
+}
+
+.section-option:hover {
+    background-color: #f0f0ff; /* Efecto suave al pasar el ratón */
+}
+
+/* Estilo del botón de selección */
+.section-btn {
+    margin-right: 15px; 
+    padding: 8px 15px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0; /* Evita que el botón se achique si el texto es muy largo */
+}
+
+.section-btn:hover:not(:disabled) {
+    background-color: #1a7fc5;
+}
+
+.section-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Estilo del texto del horario (el que no se veía) */
+.schedule-summary {
+    font-size: 0.95em; /* Asegura un tamaño legible */
+    color: #333; /* Color oscuro para contraste */
+    background-color: #f9f9f9;
+    padding: 5px 10px;
+    border-left: 3px solid #673AB7; /* Un borde de color para destacarlo */
+    flex-grow: 1; /* Permite que ocupe el espacio restante */
+    word-break: break-word; /* Para manejar textos largos */
+}
