@@ -35,11 +35,17 @@ const selectedCoursesList = document.getElementById('selected-courses');
 // 2. UTILIDADES DE TIEMPO
 // ==========================================================
 
+/**
+ * Convierte una hora en formato "HH:MM" a minutos desde medianoche.
+ */
 function timeToMinutes(timeStr) {
     const [hours, minutes] = timeStr.split(':').map(Number);
     return hours * 60 + minutes;
 }
 
+/**
+ * Busca el tiempo de inicio de slot de la grilla (ej. "10:00") para un bloque de curso (ej. "10:15").
+ */
 function findSlotTime(courseStartTimeStr) {
     const courseStartTimeMins = timeToMinutes(courseStartTimeStr);
     
@@ -56,9 +62,12 @@ function findSlotTime(courseStartTimeStr) {
 
 
 // ==========================================================
-// 3. GENERACIÓN DEL HORARIO (Tabla)
+// 3. GENERACIÓN DEL HORARIO (Tabla) - ¡SÁBADO REAÑADIDO!
 // ==========================================================
 
+/**
+ * Genera dinámicamente las filas (horas) en la tabla del horario, incluyendo Lunes a Sábado.
+ */
 function generateScheduleGrid() {
     scheduleTableBody.innerHTML = ''; 
 
@@ -73,13 +82,14 @@ function generateScheduleGrid() {
         timeCell.classList.add('time-label');
         row.appendChild(timeCell);
 
-        // Celdas para los días de la semana (Lunes a Viernes)
-        const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']; 
+        // Celdas para los días de la semana (Lunes a Sábado) <--- ¡SÁBADO AÑADIDO!
+        const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']; 
         days.forEach(day => {
             const dayCell = document.createElement('td');
             dayCell.dataset.day = day;
             dayCell.dataset.slotTime = startTime; 
             
+            // La celda de almuerzo solo aplica de Lunes a Viernes, pero la definimos en la fila
             if (slot.isLunch) {
                 dayCell.textContent = "ALMUERZO";
                 dayCell.classList.add('lunch-break');
@@ -96,16 +106,21 @@ function generateScheduleGrid() {
 // 4. LÓGICA DE DETECCIÓN DE TOPES
 // ==========================================================
 
+/**
+ * Verifica si un nuevo bloque de horario entra en conflicto con algún
+ * curso ya seleccionado en el horario.
+ */
 function checkConflict(nuevoBloque) {
     const inicioNuevo = timeToMinutes(nuevoBloque.inicio);
     const finNuevo = timeToMinutes(nuevoBloque.fin);
 
+    // 1. Verificar conflicto con el Almuerzo (sólo Lunes a Viernes)
     if (nuevoBloque.dia !== 'Sábado' && inicioNuevo < ALMUERZO_FIN && finNuevo > ALMUERZO_INICIO) {
         return true;
     }
 
+    // 2. Verificar conflicto con otros cursos
     for (const cursoSeleccionado of horarioSeleccionado) {
-        // Excluir el curso que se está chequeando contra sí mismo
         if (cursoSeleccionado.sigla === nuevoBloque.sigla && cursoSeleccionado.seccionId === nuevoBloque.seccionId) {
             continue; 
         }
@@ -125,123 +140,18 @@ function checkConflict(nuevoBloque) {
 }
 
 // ==========================================================
-// 5. MANEJO DE SELECCIÓN DE CURSOS - ¡ACTUALIZADO PARA HOVER!
+// 5. MANEJO DE SELECCIÓN DE CURSOS
 // ==========================================================
 
-function formatScheduleSummary(horario) {
-    return horario.map(bloque => 
-        `${bloque.dia}: ${bloque.inicio}-${bloque.fin} (${bloque.tipo})`
-    ).join(' | ');
-}
 /**
  * Genera una cadena de texto legible que resume el horario de una sección.
  */
 function formatScheduleSummary(horario) {
-    // Ejemplo: "Jueves: 8:30-9:50 (CÁTEDRA) | Viernes: 10:00-11:20 (AYUDANTÍA)"
     return horario.map(bloque => 
         `${bloque.dia}: ${bloque.inicio}-${bloque.fin} (${bloque.tipo})`
     ).join(' | ');
 }
 
-/**
- * Muestra las secciones de un curso y añade listeners de previsualización.
- */
-function displaySections(curso) {
-    sectionSelectionDiv.innerHTML = `<h3>Secciones de ${curso.sigla} - ${curso.nombre}:</h3>`;
-    
-    curso.secciones.forEach(seccion => {
-        
-        const sectionContainer = document.createElement('div');
-        sectionContainer.classList.add('section-option'); // <--- CLAVE PARA EL CSS
-
-        // 1. Botón de selección
-        const button = document.createElement('button');
-        button.textContent = `Sección ${seccion.id}`;
-        button.classList.add('section-btn');
-        
-        const isAdded = horarioSeleccionado.some(c => c.sigla === curso.sigla && c.seccionId === seccion.id);
-        button.disabled = isAdded;
-        if (isAdded) {
-            button.textContent += " (Seleccionada)";
-        }
-
-        // 2. Resumen del horario
-        const scheduleSummary = formatScheduleSummary(seccion.horario);
-        const summarySpan = document.createElement('span');
-        summarySpan.classList.add('schedule-summary'); // <--- CLAVE PARA EL CSS
-        summarySpan.textContent = scheduleSummary;
-        
-        // ... (El resto de la lógica de hover y el click del botón es la misma) ...
-        
-        // Eventos de previsualización (manteniendo la lógica del hover)
-        // ... (resto de la lógica del hover)
-
-        // Lógica de añadir (click en el botón)
-        button.onclick = () => {
-            // ... (resto de la lógica del botón)
-        };
-        
-        sectionContainer.appendChild(button);
-        sectionContainer.appendChild(summarySpan); // <--- INSERCIÓN DEL RESUMEN
-        sectionSelectionDiv.appendChild(sectionContainer);
-    });
-}
-// ... (El resto de app.js)
-2. 🎨 styles.css (Asegurando la Visibilidad)
-El problema es casi seguro la falta de estilos o estilos insuficientes. Asegúrate de que las siguientes reglas CSS estén presentes y correctas en tu archivo styles.css.
-
-Si ya tenías estas reglas, verifica que no estén siendo sobreescritas por otro estilo. Si no las tenías, agrégalas al final del archivo:
-
-CSS
-
-/* --- Estilos para mostrar el horario antes de seleccionar --- */
-
-/* Contenedor principal para alinear el botón y el texto */
-.section-option {
-    display: flex; /* Utiliza Flexbox para alineación */
-    align-items: center; /* Centra verticalmente */
-    margin-bottom: 8px;
-    padding: 5px 0;
-    border-bottom: 1px dashed #eee;
-    background-color: #ffffff; /* Fondo claro */
-    transition: background-color 0.2s;
-}
-
-.section-option:hover {
-    background-color: #f0f0ff; /* Efecto suave al pasar el ratón */
-}
-
-/* Estilo del botón de selección */
-.section-btn {
-    margin-right: 15px; 
-    padding: 8px 15px;
-    background-color: #2196F3;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    flex-shrink: 0; /* Evita que el botón se achique si el texto es muy largo */
-}
-
-.section-btn:hover:not(:disabled) {
-    background-color: #1a7fc5;
-}
-
-.section-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-/* Estilo del texto del horario (el que no se veía) */
-.schedule-summary {
-    font-size: 0.95em; /* Asegura un tamaño legible */
-    color: #333; /* Color oscuro para contraste */
-    background-color: #f9f9f9;
-    padding: 5px 10px;
-    border-left: 3px solid #673AB7; /* Un borde de color para destacarlo */
-    flex-grow: 1; /* Permite que ocupe el espacio restante */
-    word-break: break-word; /* Para manejar textos largos */
-}
 /**
  * Muestra las secciones de un curso y añade listeners de previsualización.
  */
@@ -269,15 +179,25 @@ function displaySections(curso) {
         const summarySpan = document.createElement('span');
         summarySpan.classList.add('schedule-summary');
         summarySpan.textContent = scheduleSummary;
-        
+
+
         // --- LÓGICA DE PREVISUALIZACIÓN (HOVER) ---
         
-        // Función para aplicar el estilo de previsualización
+        /**
+         * Función para limpiar la previsualización llamando al renderizado completo.
+         */
+        const removePreview = () => {
+            renderSchedule(); 
+        };
+
+        /**
+         * Función para aplicar los estilos y contenido del curso previsualizado.
+         */
         const previewSchedule = () => {
-            // Eliminar cualquier previsualización anterior
-            removePreview(); 
+            // Paso 1: Limpiamos la previsualización anterior y redibujamos el horario seleccionado como base.
+            renderSchedule(); 
             
-            // Re-chequear el conflicto para previsualización
+            // Paso 2: Aplicar estilos y contenido de PREVIEW.
             const hasConflict = seccion.horario.some(bloque => checkConflict({ ...bloque, sigla: curso.sigla, seccionId: seccion.id }));
             
             seccion.horario.forEach(bloque => {
@@ -289,6 +209,9 @@ function displaySections(curso) {
                 );
                 
                 if (cell && !cell.classList.contains('lunch-break')) {
+                    
+                    cell.innerHTML = ''; 
+                    
                     cell.classList.add('preview-block');
                     cell.style.backgroundColor = getCourseColor(curso.sigla);
                     cell.style.borderColor = getCourseColor(curso.sigla);
@@ -305,17 +228,6 @@ function displaySections(curso) {
             });
         };
         
-        // Función para limpiar el estilo de previsualización
-        const removePreview = () => {
-             scheduleTableBody.querySelectorAll('.preview-block').forEach(cell => {
-                // Limpiar estilos y contenido, y volver a renderizar el horario seleccionado
-                cell.classList.remove('preview-block', 'preview-conflict');
-                cell.style.backgroundColor = '';
-                cell.style.borderColor = '#ddd'; 
-                renderSchedule(); // Redibuja el horario final para limpiar
-            });
-        };
-
         // Eventos de previsualización
         if (!isAdded) {
             sectionContainer.addEventListener('mouseenter', previewSchedule);
@@ -324,15 +236,15 @@ function displaySections(curso) {
             // También útil para dispositivos táctiles
             sectionContainer.addEventListener('click', (e) => {
                 if (!e.target.classList.contains('section-btn')) {
-                    removePreview(); // Limpia si ya hay preview
-                    previewSchedule(); // Y aplica la nueva
+                    removePreview(); 
+                    previewSchedule(); 
                 }
             });
         }
         
         // Lógica de añadir (click en el botón)
         button.onclick = () => {
-            // Antes de añadir, asegúrate de remover cualquier previsualización
+            // Antes de añadir, aseguramos la limpieza total
             removePreview(); 
             
             const indexToRemove = horarioSeleccionado.findIndex(c => c.sigla === curso.sigla);
@@ -386,15 +298,13 @@ function removeCourse(sigla, seccionId) {
 
 /**
  * Dibuja los bloques de curso en la tabla de horario.
- * Importante: Esta función también limpia los estilos de previsualización
- * que pudieran haber quedado en las celdas al re-renderizar.
  */
 function renderSchedule() {
     // 1. Limpiar todos los bloques previos y estilos de previsualización
     const allDayCells = scheduleTableBody.querySelectorAll('td:not(.time-label):not(.lunch-break)');
     allDayCells.forEach(cell => {
         cell.innerHTML = '';
-        cell.classList.remove('preview-block', 'preview-conflict');
+        cell.classList.remove('preview-block', 'preview-conflict'); 
         cell.style.backgroundColor = '';
         cell.style.borderColor = '#ddd'; 
     });
@@ -433,8 +343,6 @@ function renderSchedule() {
     });
 }
 
-// ... (El resto de funciones como renderSelectedList y searchCourses son iguales)
-
 function renderSelectedList() {
     selectedCoursesList.innerHTML = '';
     horarioSeleccionado.forEach(curso => {
@@ -455,7 +363,11 @@ function renderSelectedList() {
     });
 }
 
+
 function searchCourses() {
+    // Limpia la previsualización al iniciar la búsqueda
+    renderSchedule(); 
+    
     const query = courseSearchInput.value.toLowerCase();
     courseResultsDiv.innerHTML = '';
     sectionSelectionDiv.innerHTML = ''; 
@@ -490,28 +402,31 @@ function getCourseColor(sigla) {
         'PEM101': '#673AB7', 
         'EHI036': '#00BCD4', 
         'INF305': '#FF5722',
-        'OPM037': '#E91E63', // Rosa
-        'PEM001': '#8BC34A', // Verde Lima
-        'PEM002': '#FFC107', // Amarillo Ámbar
-        'PEM102': '#03A9F4', // Azul Claro
-        'PEM103': '#CDDC39', // Lima
-        'EHI018': '#9C27B0', // Púrpura
-        'EHI021': '#009688', // Teal
-        'EHI022': '#607D8B', // Gris Azulado
-        'EHI030': '#795548', // Marrón
-        'EHI031': '#F44336', // Rojo
-        'EHI035': '#4CAF50', // Verde
-        'EHI037': '#FF9800', // Naranja
-        'EHI038': '#2196F3', // Azul
-        'EHI039': '#673AB7', // Morado
-        'INF301': '#FF5722', // Naranja Oscuro
-        'INF401': '#00BCD4', // Cyan
-        'INF403': '#9E9E9E', // Gris
-        'INF405': '#607D8B', // Gris Azulado
+        'OPM037': '#E91E63', 
+        'PEM001': '#8BC34A', 
+        'PEM002': '#FFC107', 
+        'PEM102': '#03A9F4', 
+        'PEM103': '#CDDC39', 
+        'EHI018': '#9C27B0', 
+        'EHI021': '#009688', 
+        'EHI022': '#607D8B', 
+        'EHI030': '#795548', 
+        'EHI031': '#F44336', 
+        'EHI035': '#4CAF50', 
+        'EHI037': '#FF9800', 
+        'EHI038': '#2196F3', 
+        'EHI039': '#673AB7', 
+        'INF301': '#FF5722', 
+        'INF401': '#00BCD4', 
+        'INF403': '#9E9E9E', 
+        'INF405': '#607D8B', 
     };
     return colors[sigla] || '#9C27B0'; 
 }
 
+/**
+ * Inicializa la aplicación: genera la tabla y activa los listeners.
+ */
 function initApp() {
     generateScheduleGrid();
     courseSearchInput.addEventListener('input', searchCourses);
