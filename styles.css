@@ -1,14 +1,14 @@
 /* (Mantenemos los estilos anteriores de index.html) */
 
 /* --- CAMBIOS CLAVE PARA EL SCROLL DEL HORARIO --- */
-/* 1. Aseguramos que el cuerpo de la página y el html tomen el 100% del alto disponible */
 html, body {
     font-family: Arial, sans-serif;
     background-color: #f4f7f6;
     color: #333;
     margin: 0;
     padding: 0;
-    height: 100%; /* CLAVE: Para que los contenedores hijos puedan usar porcentajes de altura */
+    /* CLAVE 1: El html y el body necesitan 100% de altura para que los hijos puedan usar 'vh' */
+    height: 100%; 
 }
 
 header {
@@ -24,10 +24,9 @@ header {
     margin: 20px auto;
     padding: 10px;
     gap: 20px;
-    /* CLAVE: Establecemos una altura para que .schedule-view pueda calcular su 100% */
-    /* 100vh (alto de la ventana) - 40px (margin/padding superior) - 40px (margin/padding inferior) - 62px (alto estimado del header) */
-    height: calc(100vh - 122px);
-    align-items: flex-start; /* Alinea los ítems arriba */
+    /* CLAVE 2: Define una altura fija (el 100% de la ventana menos el header y márgenes) */
+    height: calc(100vh - 122px); 
+    align-items: flex-start; 
 }
 
 .controls {
@@ -36,15 +35,16 @@ header {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    height: 100%; /* Ajuste para que ocupe todo el alto disponible en .container */
+    /* Asegura que la columna de controles también tenga el alto del contenedor */
+    height: 100%; 
     overflow-y: auto; /* Permite scroll si los controles son muy largos */
 }
 
 .schedule-view {
     flex: 2; 
-    /* CLAVE: Permite que la vista del horario scrollee internamente */
+    /* CLAVE 3: Asegura que ocupe el alto del contenedor y permite desplazamiento interno */
+    height: 100%; 
     overflow-y: auto; 
-    height: 100%; /* Asegura que tome el 100% del alto de .container */
 }
 /* --- FIN CAMBIOS CLAVE PARA EL SCROLL DEL HORARIO --- */
 
@@ -245,17 +245,17 @@ header {
 
 /* Contenedor principal para alinear el botón y el texto */
 .section-option {
-    display: flex; /* Utiliza Flexbox para alineación */
-    align-items: center; /* Centra verticalmente */
+    display: flex; 
+    align-items: center; 
     margin-bottom: 8px;
     padding: 5px 0;
     border-bottom: 1px dashed #eee;
-    background-color: #ffffff; /* Fondo claro */
+    background-color: #ffffff; 
     transition: background-color 0.2s;
 }
 
 .section-option:hover {
-    background-color: #f0f0ff; /* Efecto suave al pasar el ratón */
+    background-color: #f0f0ff; 
 }
 
 /* Estilo del botón de selección */
@@ -267,7 +267,7 @@ header {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    flex-shrink: 0; /* Evita que el botón se achique si el texto es muy largo */
+    flex-shrink: 0; 
 }
 
 .section-btn:hover:not(:disabled) {
@@ -281,11 +281,11 @@ header {
 
 /* Estilo del texto del horario (el que no se veía) */
 .schedule-summary {
-    font-size: 0.95em; /* Asegura un tamaño legible */
-    color: #333; /* Color oscuro para contraste */
+    font-size: 0.95em; 
+    color: #333; 
     background-color: #f9f9f9;
     padding: 5px 10px;
-    border-left: 3px solid #673AB7; /* Un borde de color para destacarlo */
-    flex-grow: 1; /* Permite que ocupe el espacio restante */
-    word-break: break-word; /* Para manejar textos largos */
+    border-left: 3px solid #673AB7; 
+    flex-grow: 1; 
+    word-break: break-word; 
 }
