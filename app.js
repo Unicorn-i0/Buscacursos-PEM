@@ -19,8 +19,9 @@ const TIME_SLOTS = [
     { start: "15:20", end: "16:50" }, // Slot de 90 min
     { start: "16:50", end: "18:20" }, // Slot de 90 min
     { start: "18:20", end: "19:50" }, // Slot de 90 min
-    { start: "18:50", end: "20:20" }, // Slot de 90 min
-    { start: "20:20", end: "21:50" }, // Slot de 90 min
+    // --> NUEVOS SLOTS AÑADIDOS
+    { start: "19:50", end: "21:20" }, // Slot de 90 min
+    { start: "21:20", end: "22:50" }  // Slot de 90 min
 ];
 
 // Almacenamiento de cursos seleccionados para el horario
@@ -37,11 +38,17 @@ const selectedCoursesList = document.getElementById('selected-courses');
 // 2. UTILIDADES DE TIEMPO
 // ==========================================================
 
+/**
+ * Convierte una hora en formato "HH:MM" a minutos desde medianoche.
+ */
 function timeToMinutes(timeStr) {
     const [hours, minutes] = timeStr.split(':').map(Number);
     return hours * 60 + minutes;
 }
 
+/**
+ * Busca el tiempo de inicio de slot de la grilla (ej. "10:00") para un bloque de curso (ej. "10:15").
+ */
 function findSlotTime(courseStartTimeStr) {
     const courseStartTimeMins = timeToMinutes(courseStartTimeStr);
     
@@ -61,6 +68,9 @@ function findSlotTime(courseStartTimeStr) {
 // 3. GENERACIÓN DEL HORARIO (Tabla)
 // ==========================================================
 
+/**
+ * Genera dinámicamente las filas (horas) en la tabla del horario, incluyendo Lunes a Sábado.
+ */
 function generateScheduleGrid() {
     scheduleTableBody.innerHTML = ''; 
 
@@ -82,6 +92,7 @@ function generateScheduleGrid() {
             dayCell.dataset.day = day;
             dayCell.dataset.slotTime = startTime; 
             
+            // La celda de almuerzo solo aplica en la fila del almuerzo
             if (slot.isLunch) {
                 dayCell.textContent = "ALMUERZO";
                 dayCell.classList.add('lunch-break');
@@ -98,14 +109,20 @@ function generateScheduleGrid() {
 // 4. LÓGICA DE DETECCIÓN DE TOPES
 // ==========================================================
 
+/**
+ * Verifica si un nuevo bloque de horario entra en conflicto con algún
+ * curso ya seleccionado en el horario.
+ */
 function checkConflict(nuevoBloque) {
     const inicioNuevo = timeToMinutes(nuevoBloque.inicio);
     const finNuevo = timeToMinutes(nuevoBloque.fin);
 
+    // 1. Verificar conflicto con el Almuerzo (sólo Lunes a Viernes)
     if (nuevoBloque.dia !== 'Sábado' && inicioNuevo < ALMUERZO_FIN && finNuevo > ALMUERZO_INICIO) {
         return true;
     }
 
+    // 2. Verificar conflicto con otros cursos
     for (const cursoSeleccionado of horarioSeleccionado) {
         if (cursoSeleccionado.sigla === nuevoBloque.sigla && cursoSeleccionado.seccionId === nuevoBloque.seccionId) {
             continue; 
@@ -126,15 +143,21 @@ function checkConflict(nuevoBloque) {
 }
 
 // ==========================================================
-// 5. MANEJO DE SELECCIÓN DE CURSOS - ¡FIX DEL BUG DE AGRUPACIÓN!
+// 5. MANEJO DE SELECCIÓN DE CURSOS - ¡FIX DEL BUG DE PREVIEW!
 // ==========================================================
 
+/**
+ * Genera una cadena de texto legible que resume el horario de una sección.
+ */
 function formatScheduleSummary(horario) {
     return horario.map(bloque => 
         `${bloque.dia}: ${bloque.inicio}-${bloque.fin} (${bloque.tipo})`
     ).join(' | ');
 }
 
+/**
+ * Muestra las secciones de un curso y añade listeners de previsualización.
+ */
 function displaySections(curso) {
     sectionSelectionDiv.innerHTML = `<h3>Secciones de ${curso.sigla} - ${curso.nombre}:</h3>`;
     
@@ -143,6 +166,7 @@ function displaySections(curso) {
         const sectionContainer = document.createElement('div');
         sectionContainer.classList.add('section-option');
 
+        // 1. Botón de selección
         const button = document.createElement('button');
         button.textContent = `Sección ${seccion.id}`;
         button.classList.add('section-btn');
@@ -153,6 +177,7 @@ function displaySections(curso) {
             button.textContent += " (Seleccionada)";
         }
 
+        // 2. Resumen del horario
         const scheduleSummary = formatScheduleSummary(seccion.horario);
         const summarySpan = document.createElement('span');
         summarySpan.classList.add('schedule-summary');
@@ -162,11 +187,12 @@ function displaySections(curso) {
         // --- LÓGICA DE PREVISUALIZACIÓN (HOVER) ---
         
         const removePreview = () => {
+            // Al salir, redibujamos el horario base (limpia la preview temporal)
             renderSchedule(); 
         };
 
         const previewSchedule = () => {
-            // Paso 1: Limpiamos y redibujamos el horario seleccionado como base.
+            // Paso 1: Redibujamos el horario seleccionado para limpiar la preview anterior.
             renderSchedule(); 
             
             // Paso 2: Aplicar estilos y contenido de PREVIEW.
@@ -182,36 +208,30 @@ function displaySections(curso) {
                 
                 if (cell && !cell.classList.contains('lunch-break')) {
                     
-                    // --- INICIO DEL FIX para el BUG de AGRUPACIÓN (Sobreescritura) ---
-                    
-                    // Comentario: Se ha eliminado 'cell.innerHTML = '';' (que borraba los bloques seleccionados).
-                    // Ahora usamos un div temporal para la previsualización y lo añadimos.
-                    
-                    // 1. Crear el bloque de previsualización (usando una clase temporal para identificarlo)
+                    // --- INICIO DEL FIX: Creamos un elemento temporal y lo APENDIZAMOS (no sobrescribimos) ---
                     const previewBlockDiv = document.createElement('div');
-                    previewBlockDiv.classList.add('course-block', 'temp-preview');
+                    previewBlockDiv.classList.add('course-block', 'temp-preview'); // Clase temporal para identificar la preview
                     
-                    // 2. Aplicar estilos y clases al TD padre (para el borde/fondo del slot)
+                    // Aplicar estilos y clases al TD padre (para el borde/fondo del slot)
                     cell.classList.add('preview-block');
                     cell.style.backgroundColor = getCourseColor(curso.sigla);
                     cell.style.borderColor = getCourseColor(curso.sigla);
                     
-                    // 3. Aplicar estilos de conflicto si es necesario
+                    // Aplicar estilos de conflicto si es necesario
                     if (hasConflict) {
                         cell.classList.add('preview-conflict');
                         previewBlockDiv.classList.add('conflict');
                     }
                     
-                    // 4. Incluir el contenido de la clase en el div temporal
+                    // Incluir el contenido de la clase en el div temporal (incluye las horas reales)
                     previewBlockDiv.innerHTML = `
                         <span style="font-weight: bold;">${curso.sigla}-${seccion.id}</span><br>
                         <span>${bloque.tipo}</span>
                         <small>${bloque.inicio}-${bloque.fin}</small> 
                     `;
                     
-                    // 5. Añadir el div temporal al TD
+                    // Añadir el div temporal al TD
                     cell.appendChild(previewBlockDiv);
-                    
                     // --- FIN DEL FIX ---
                 }
             });
@@ -222,6 +242,7 @@ function displaySections(curso) {
             sectionContainer.addEventListener('mouseenter', previewSchedule);
             sectionContainer.addEventListener('mouseleave', removePreview);
             
+            // También útil para dispositivos táctiles
             sectionContainer.addEventListener('click', (e) => {
                 if (!e.target.classList.contains('section-btn')) {
                     removePreview(); 
@@ -232,6 +253,7 @@ function displaySections(curso) {
         
         // Lógica de añadir (click en el botón)
         button.onclick = () => {
+            // Antes de añadir, aseguramos la limpieza total
             removePreview(); 
             
             const indexToRemove = horarioSeleccionado.findIndex(c => c.sigla === curso.sigla);
@@ -280,7 +302,7 @@ function removeCourse(sigla, seccionId) {
 }
 
 // ==========================================================
-// 6. RENDERIZADO Y BÚSQUEDA - ¡FIX DEL BUG DE AGRUPACIÓN!
+// 6. RENDERIZADO Y BÚSQUEDA
 // ==========================================================
 
 /**
@@ -288,6 +310,7 @@ function removeCourse(sigla, seccionId) {
  */
 function renderSchedule() {
     // 1. Limpiar todos los bloques previos y estilos de previsualización
+    // Esto limpia tanto los bloques permanentes como los temporales de la preview
     const allDayCells = scheduleTableBody.querySelectorAll('td:not(.time-label):not(.lunch-break)');
     allDayCells.forEach(cell => {
         cell.innerHTML = '';
@@ -320,11 +343,11 @@ function renderSchedule() {
                 
                 blockDiv.style.backgroundColor = getCourseColor(curso.sigla);
                 
-                // AÑADIDO: Incluye la hora real de la clase (inicio-fin) en el render final.
+                // Incluye la hora real de la clase (inicio-fin) en el render final.
                 blockDiv.innerHTML = `
                     <span style="font-weight: bold;">${curso.sigla}-${curso.seccionId}</span><br>
                     <span>${bloque.tipo}</span>
-                    <small>${bloque.inicio}-${bloque.fin}</small> 
+                    <small>${bloque.inicio}-${bloque.fin}</small>
                 `;
                 cell.appendChild(blockDiv);
             }
@@ -354,6 +377,7 @@ function renderSelectedList() {
 
 
 function searchCourses() {
+    // Limpia la previsualización al iniciar la búsqueda
     renderSchedule(); 
     
     const query = courseSearchInput.value.toLowerCase();
@@ -384,18 +408,37 @@ function searchCourses() {
 
 function getCourseColor(sigla) {
     const colors = {
-        'INF101': '#4CAF50', 'MAT202': '#FF9800', 'INF303': '#2196F3', 
-        'PEM101': '#673AB7', 'EHI036': '#00BCD4', 'INF305': '#FF5722',
-        'OPM037': '#E91E63', 'PEM001': '#8BC34A', 'PEM002': '#FFC107', 
-        'PEM102': '#03A9F4', 'PEM103': '#CDDC39', 'EHI018': '#9C27B0', 
-        'EHI021': '#009688', 'EHI022': '#607D8B', 'EHI030': '#795548', 
-        'EHI031': '#F44336', 'EHI035': '#4CAF50', 'EHI037': '#FF9800', 
-        'EHI038': '#2196F3', 'EHI039': '#673AB7', 'INF301': '#FF5722', 
-        'INF401': '#00BCD4', 'INF403': '#9E9E9E', 'INF405': '#607D8B', 
+        'INF101': '#4CAF50', 
+        'MAT202': '#FF9800', 
+        'INF303': '#2196F3', 
+        'PEM101': '#673AB7', 
+        'EHI036': '#00BCD4', 
+        'INF305': '#FF5722',
+        'OPM037': '#E91E63', 
+        'PEM001': '#8BC34A', 
+        'PEM002': '#FFC107', 
+        'PEM102': '#03A9F4', 
+        'PEM103': '#CDDC39', 
+        'EHI018': '#9C27B0', 
+        'EHI021': '#009688', 
+        'EHI022': '#607D8B', 
+        'EHI030': '#795548', 
+        'EHI031': '#F44336', 
+        'EHI035': '#4CAF50', 
+        'EHI037': '#FF9800', 
+        'EHI038': '#2196F3', 
+        'EHI039': '#673AB7', 
+        'INF301': '#FF5722', 
+        'INF401': '#00BCD4', 
+        'INF403': '#9E9E9E', 
+        'INF405': '#607D8B', 
     };
     return colors[sigla] || '#9C27B0'; 
 }
 
+/**
+ * Inicializa la aplicación: genera la tabla y activa los listeners.
+ */
 function initApp() {
     generateScheduleGrid();
     courseSearchInput.addEventListener('input', searchCourses);
