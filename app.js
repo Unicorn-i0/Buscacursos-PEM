@@ -19,6 +19,8 @@ const TIME_SLOTS = [
     { start: "15:20", end: "16:50" }, // Slot de 90 min
     { start: "16:50", end: "18:20" }, // Slot de 90 min
     { start: "18:20", end: "19:50" }, // Slot de 90 min
+    { start: "18:50", end: "20:20" }, // Slot de 90 min
+    { start: "20:20", end: "21:50" }, // Slot de 90 min
 ];
 
 // Almacenamiento de cursos seleccionados para el horario
