@@ -19,9 +19,9 @@ const TIME_SLOTS = [
     { start: "15:20", end: "16:50" }, // Slot de 90 min
     { start: "16:50", end: "18:20" }, // Slot de 90 min
     { start: "18:20", end: "19:50" }, // Slot de 90 min
-    // --> NUEVOS SLOTS AÑADIDOS
-    { start: "19:50", end: "21:20" }, // Slot de 90 min
-    { start: "21:20", end: "22:50" }  // Slot de 90 min
+    // Bloques adicionales solicitados:
+    { start: "19:50", end: "21:20" }, // Slot de 90 min (Nuevo)
+    { start: "21:20", end: "22:50" }, // Slot de 90 min (Nuevo)
 ];
 
 // Almacenamiento de cursos seleccionados para el horario
@@ -65,7 +65,7 @@ function findSlotTime(courseStartTimeStr) {
 
 
 // ==========================================================
-// 3. GENERACIÓN DEL HORARIO (Tabla)
+// 3. GENERACIÓN DEL HORARIO (Tabla) - ¡SÁBADO REAÑADIDO!
 // ==========================================================
 
 /**
@@ -85,14 +85,14 @@ function generateScheduleGrid() {
         timeCell.classList.add('time-label');
         row.appendChild(timeCell);
 
-        // Celdas para los días de la semana (Lunes a Sábado)
+        // Celdas para los días de la semana (Lunes a Sábado) <--- ¡SÁBADO AÑADIDO!
         const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']; 
         days.forEach(day => {
             const dayCell = document.createElement('td');
             dayCell.dataset.day = day;
             dayCell.dataset.slotTime = startTime; 
             
-            // La celda de almuerzo solo aplica en la fila del almuerzo
+            // La celda de almuerzo solo aplica de Lunes a Viernes, pero la definimos en la fila
             if (slot.isLunch) {
                 dayCell.textContent = "ALMUERZO";
                 dayCell.classList.add('lunch-break');
@@ -143,7 +143,7 @@ function checkConflict(nuevoBloque) {
 }
 
 // ==========================================================
-// 5. MANEJO DE SELECCIÓN DE CURSOS - ¡FIX DEL BUG DE PREVIEW!
+// 5. MANEJO DE SELECCIÓN DE CURSOS
 // ==========================================================
 
 /**
@@ -186,13 +186,18 @@ function displaySections(curso) {
 
         // --- LÓGICA DE PREVISUALIZACIÓN (HOVER) ---
         
+        /**
+         * Función para limpiar la previsualización llamando al renderizado completo.
+         */
         const removePreview = () => {
-            // Al salir, redibujamos el horario base (limpia la preview temporal)
             renderSchedule(); 
         };
 
+        /**
+         * Función para aplicar los estilos y contenido del curso previsualizado.
+         */
         const previewSchedule = () => {
-            // Paso 1: Redibujamos el horario seleccionado para limpiar la preview anterior.
+            // Paso 1: Limpiamos la previsualización anterior y redibujamos el horario seleccionado como base.
             renderSchedule(); 
             
             // Paso 2: Aplicar estilos y contenido de PREVIEW.
@@ -208,31 +213,20 @@ function displaySections(curso) {
                 
                 if (cell && !cell.classList.contains('lunch-break')) {
                     
-                    // --- INICIO DEL FIX: Creamos un elemento temporal y lo APENDIZAMOS (no sobrescribimos) ---
-                    const previewBlockDiv = document.createElement('div');
-                    previewBlockDiv.classList.add('course-block', 'temp-preview'); // Clase temporal para identificar la preview
+                    cell.innerHTML = ''; 
                     
-                    // Aplicar estilos y clases al TD padre (para el borde/fondo del slot)
                     cell.classList.add('preview-block');
                     cell.style.backgroundColor = getCourseColor(curso.sigla);
                     cell.style.borderColor = getCourseColor(curso.sigla);
                     
-                    // Aplicar estilos de conflicto si es necesario
                     if (hasConflict) {
                         cell.classList.add('preview-conflict');
-                        previewBlockDiv.classList.add('conflict');
                     }
                     
-                    // Incluir el contenido de la clase en el div temporal (incluye las horas reales)
-                    previewBlockDiv.innerHTML = `
+                    cell.innerHTML = `
                         <span style="font-weight: bold;">${curso.sigla}-${seccion.id}</span><br>
                         <span>${bloque.tipo}</span>
-                        <small>${bloque.inicio}-${bloque.fin}</small> 
                     `;
-                    
-                    // Añadir el div temporal al TD
-                    cell.appendChild(previewBlockDiv);
-                    // --- FIN DEL FIX ---
                 }
             });
         };
@@ -310,7 +304,6 @@ function removeCourse(sigla, seccionId) {
  */
 function renderSchedule() {
     // 1. Limpiar todos los bloques previos y estilos de previsualización
-    // Esto limpia tanto los bloques permanentes como los temporales de la preview
     const allDayCells = scheduleTableBody.querySelectorAll('td:not(.time-label):not(.lunch-break)');
     allDayCells.forEach(cell => {
         cell.innerHTML = '';
@@ -343,11 +336,9 @@ function renderSchedule() {
                 
                 blockDiv.style.backgroundColor = getCourseColor(curso.sigla);
                 
-                // Incluye la hora real de la clase (inicio-fin) en el render final.
                 blockDiv.innerHTML = `
                     <span style="font-weight: bold;">${curso.sigla}-${curso.seccionId}</span><br>
                     <span>${bloque.tipo}</span>
-                    <small>${bloque.inicio}-${bloque.fin}</small>
                 `;
                 cell.appendChild(blockDiv);
             }
@@ -430,7 +421,7 @@ function getCourseColor(sigla) {
         'EHI039': '#673AB7', 
         'INF301': '#FF5722', 
         'INF401': '#00BCD4', 
-        'INF403': '#9E9E9E', 
+        'INF403': '#9E9E9E',  
         'INF405': '#607D8B', 
     };
     return colors[sigla] || '#9C27B0'; 
