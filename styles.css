@@ -1,11 +1,14 @@
 /* (Mantenemos los estilos anteriores de index.html) */
 
-body {
+/* --- CAMBIOS CLAVE PARA EL SCROLL DEL HORARIO --- */
+/* 1. Aseguramos que el cuerpo de la página y el html tomen el 100% del alto disponible */
+html, body {
     font-family: Arial, sans-serif;
     background-color: #f4f7f6;
     color: #333;
     margin: 0;
     padding: 0;
+    height: 100%; /* CLAVE: Para que los contenedores hijos puedan usar porcentajes de altura */
 }
 
 header {
@@ -21,6 +24,10 @@ header {
     margin: 20px auto;
     padding: 10px;
     gap: 20px;
+    /* CLAVE: Establecemos una altura para que .schedule-view pueda calcular su 100% */
+    /* 100vh (alto de la ventana) - 40px (margin/padding superior) - 40px (margin/padding inferior) - 62px (alto estimado del header) */
+    height: calc(100vh - 122px);
+    align-items: flex-start; /* Alinea los ítems arriba */
 }
 
 .controls {
@@ -29,12 +36,17 @@ header {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    height: fit-content;
+    height: 100%; /* Ajuste para que ocupe todo el alto disponible en .container */
+    overflow-y: auto; /* Permite scroll si los controles son muy largos */
 }
 
 .schedule-view {
     flex: 2; 
+    /* CLAVE: Permite que la vista del horario scrollee internamente */
+    overflow-y: auto; 
+    height: 100%; /* Asegura que tome el 100% del alto de .container */
 }
+/* --- FIN CAMBIOS CLAVE PARA EL SCROLL DEL HORARIO --- */
 
 /* --- Tabla de Horario --- */
 #schedule-table {
@@ -208,6 +220,8 @@ header {
 
 .preview-block {
     opacity: 0.6; /* Un poco transparente para distinguirlo */
+    /* Aseguramos que el div temporal se posicione bien */
+    position: relative; 
     border: 3px dashed #333; /* Borde punteado para indicar previsualización */
     color: white;
     cursor: default !important; /* Muestra que no es interactivo aún */
