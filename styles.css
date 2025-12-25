@@ -48,15 +48,15 @@ header {
 
 #schedule-table th, #schedule-table td {
     border: 1px solid #ddd;
-    /* CAMBIO CRÍTICO: Eliminar el padding para que la altura de 50px sea exacta para el contenido interno */
+    /* CRÍTICO: Eliminar el padding para que la altura de 50px sea exacta */
     padding: 0; 
     text-align: center;
     height: 50px; 
     position: relative;
     box-sizing: border-box; 
-    /* CAMBIO CRÍTICO: Ocultar cualquier contenido que intente desbordarse y expandir la celda */
+    /* CRÍTICO: Ocultar cualquier contenido que intente desbordarse y expandir la celda */
     overflow: hidden;
-    vertical-align: top; /* Ayuda a la alineación vertical sin expandir */
+    vertical-align: top; 
 }
 
 #schedule-table th {
@@ -71,10 +71,11 @@ header {
     color: white;
     border-radius: 4px;
     font-size: 12px;
-    /* Mantener el padding aquí para el texto, pero la celda (td) lo contiene */
+    /* Padding interno del bloque */
     padding: 2px; 
     cursor: pointer;
-    line-height: 1.2;
+    /* CAMBIO CLAVE: Ajustar la altura de línea para hacer el texto más compacto */
+    line-height: 1; 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
