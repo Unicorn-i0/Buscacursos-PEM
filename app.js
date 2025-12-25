@@ -126,7 +126,7 @@ function checkConflict(nuevoBloque) {
 }
 
 // ==========================================================
-// 5. MANEJO DE SELECCIÓN DE CURSOS - ¡FIX DEL BUG DE AGRUPACIÓN!
+// 5. MANEJO DE SELECCIÓN DE CURSOS
 // ==========================================================
 
 function formatScheduleSummary(horario) {
@@ -192,11 +192,10 @@ function displaySections(curso) {
                         cell.classList.add('preview-conflict');
                     }
                     
-                    // CAMBIO CLAVE: Eliminado el <br>
+                    // CAMBIO CLAVE: Contenido de previsualización sin las horas.
                     cell.innerHTML = `
                         <span style="font-weight: bold;">${curso.sigla}-${seccion.id}</span>
                         <span>${bloque.tipo}</span>
-                        <small>${bloque.inicio}-${bloque.fin}</small> 
                     `;
                 }
             });
@@ -265,7 +264,7 @@ function removeCourse(sigla, seccionId) {
 }
 
 // ==========================================================
-// 6. RENDERIZADO Y BÚSQUEDA - ¡FIX DEL BUG DE AGRUPACIÓN!
+// 6. RENDERIZADO Y BÚSQUEDA
 // ==========================================================
 
 /**
@@ -305,11 +304,10 @@ function renderSchedule() {
                 
                 blockDiv.style.backgroundColor = getCourseColor(curso.sigla);
                 
-                // CAMBIO CLAVE: Eliminado el <br>
+                // CAMBIO CLAVE: Contenido de bloque final sin las horas.
                 blockDiv.innerHTML = `
                     <span style="font-weight: bold;">${curso.sigla}-${curso.seccionId}</span>
                     <span>${bloque.tipo}</span>
-                    <small>${bloque.inicio}-${bloque.fin}</small> 
                 `;
                 cell.appendChild(blockDiv);
             }
