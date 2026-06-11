@@ -1,0 +1,303 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #004d99;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    max-width: 1300px;
+    margin: 20px auto;
+    padding: 10px;
+    gap: 20px;
+    flex: 1; /* Permite que el contenedor empuje el footer hacia abajo */
+}
+
+.controls {
+    flex: 1; 
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    height: fit-content;
+}
+
+.schedule-view {
+    flex: 2; 
+}
+
+/* --- Tabla de Horario --- */
+#schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#schedule-table th, #schedule-table td {
+    border: 1px solid #ddd;
+    padding: 0; 
+    text-align: center;
+    height: 50px; 
+    position: relative;
+    box-sizing: border-box; 
+    overflow: hidden;
+    vertical-align: top; 
+}
+
+#schedule-table th {
+    background-color: #eef;
+    color: #004d99;
+    padding: 8px;
+}
+
+.course-block {
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 2px; 
+    cursor: pointer;
+    line-height: 1.2; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.95;
+    box-sizing: border-box;
+}
+
+.lunch-break {
+    background-color: #f0f0f0; 
+    font-weight: bold;
+    color: #666;
+    vertical-align: middle;
+    pointer-events: none; 
+    padding: 8px; 
+}
+
+.course-block.conflict {
+    background-color: #dc3545 !important; 
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    from { opacity: 0.8; }
+    to { opacity: 1; }
+}
+
+#course-search {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* AQUÍ ESTÁ EL CAMBIO: Altura fija obligatoria de 250px para el buscador */
+.results-list {
+    border: 1px solid #ddd;
+    height: 250px; 
+    max-height: 250px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    background: #fff;
+    border-radius: 4px;
+}
+
+.result-item {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+}
+
+.result-item:hover {
+    background-color: #f0f0f0;
+}
+
+.sections-scroll-container {
+    max-height: 220px; 
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 5px;
+    background-color: #fcfcfc;
+}
+
+.section-option {
+    display: flex; 
+    align-items: center;
+    margin-bottom: 6px;
+    padding: 5px;
+    border-bottom: 1px dashed #eee;
+    background-color: #ffffff; 
+    transition: background-color 0.2s;
+}
+
+.section-option:hover {
+    background-color: #f0f0ff; 
+}
+
+.section-btn {
+    margin-right: 10px; 
+    padding: 6px 12px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0; 
+    font-size: 12px;
+}
+
+.section-btn:hover:not(:disabled) {
+    background-color: #1a7fc5;
+}
+
+.section-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.schedule-summary {
+    font-size: 0.85em; 
+    color: #444; 
+    background-color: #f9f9f9;
+    padding: 4px 8px;
+    border-left: 3px solid #673AB7; 
+    flex-grow: 1; 
+}
+
+/* ESTILOS DE LA TABLA DE SELECCIONADOS */
+.selected-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.selected-table th {
+    background-color: #f1f5f9;
+    color: #475569;
+    text-align: left;
+    padding: 8px;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+.selected-table td {
+    padding: 8px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.text-truncate {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.color-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.selected-table tr.row-has-conflict {
+    background-color: #fef2f2 !important;
+    color: #b91c1c;
+}
+
+.selected-table tr.row-has-conflict td {
+    border-bottom: 1px solid #fca5a5;
+}
+
+.action-remove-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.action-remove-btn:hover {
+    background-color: #dc2626;
+}
+
+/* ========================================= */
+/* PREVISUALIZACIÓN Y ALERTA DE TOPE */
+/* ========================================= */
+
+.preview-block {
+    position: absolute; /* Esto permite sobreponerse a un curso ya existente */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    opacity: 0.65; 
+    border: 2px dashed #000000 !important; 
+    background-image: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);
+    background-size: 10px 10px;
+}
+
+/* Solo se aplica al bloque EXACTO que tiene el tope */
+.preview-conflict {
+    background-color: rgba(220, 53, 69, 0.9) !important; /* Rojo fuerte y casi sólido */
+    border: 3px solid #b91c1c !important;
+    opacity: 0.95;
+    color: white;
+}
+
+/* ESTILOS DE LA FIRMA (FOOTER CENTRADO) */
+.site-footer {
+    background-color: #ffffff;
+    color: #475569;
+    text-align: center;
+    padding: 12px 30px;
+    margin: auto auto 20px auto; /* El primer 'auto' la empuja abajo, los otros la centran */
+    font-size: 14px;
+    border-radius: 50px; /* Le da un borde redondeado elegante */
+    width: max-content; /* Hace que el recuadro mida exactamente lo que mide tu texto */
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombra suave para que resalte */
+}
+
+.site-footer a {
+    color: #004d99;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.site-footer a:hover {
+    text-decoration: underline;
+}
