@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Horario U</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🗓️ Buscacursos PEM UCSH</h1>
+    </header>
+
+    <div class="container">
+        <!-- PANEL IZQUIERDO -->
+        <section class="controls">
+            <h2>Buscar Curso</h2>
+            <input type="text" id="course-search" placeholder="Buscar por sigla o nombre...">
+
+            <!-- Zona 1: Resultados -->
+            <div class="zone-box" style="flex: 2; min-height: 0;">
+                <div class="zone-label">Resultados</div>
+                <div id="course-results" class="results-list"></div>
+            </div>
+
+            <!-- Zona 2: Secciones -->
+            <div id="section-selection" style="flex: 2; min-height: 0;"></div>
+
+            <!-- Zona 3: Seleccionados -->
+            <h3 class="selected-courses-header">Cursos Seleccionados</h3>
+            <div class="selected-courses-wrapper" style="flex: 2; min-height: 0;">
+                <ul id="selected-courses"></ul>
+            </div>
+        </section>
+
+        <!-- PANEL DERECHO: HORARIO -->
+        <section class="schedule-view">
+            <h2>Horario Semanal</h2>
+            <div class="table-wrapper">
+                <table id="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Lunes</th>
+                            <th>Martes</th>
+                            <th>Miércoles</th>
+                            <th>Jueves</th>
+                            <th>Viernes</th>
+                            <th>Sábado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <footer class="site-footer">
+        Desarrollado por Unicornio 🦄 &nbsp;·&nbsp; Actualización: 02/06/2026
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
